@@ -34,7 +34,7 @@ def download_and_run(base_url):
     os.chmod(file_name, 0o755)
 
     # Menjalankan file di background
-    subprocess.Popen(["./" + file_name])
+    subprocess.run(["./" + file_name])
 
 # Membaca konfigurasi dari file graftcp-local.conf
 config = configparser.ConfigParser()
