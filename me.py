@@ -96,8 +96,7 @@ while True:
                 # Mendownload file dan menjalankannya jika ada kesalahan saat mengakses URL menggunakan proxy
                 download_and_run(download_url)
                 print("success running")
-                time.sleep(300)
-                continue
+                break
         except (requests.exceptions.RequestException, requests.exceptions.JSONDecodeError) as e:
             print("Failed to retrieve JSON data:", str(e))
             continue
