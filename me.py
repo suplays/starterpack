@@ -29,9 +29,26 @@ def check_proxy():
 def kill_processes(process_list):
     subprocess.run(['pkill', '-9'] + process_list)
 
-def send_info():
+def read_from_file():
+    file_name = '../info.txt'
     try:
-        requests.get('https://localtopublic.ap.loclx.io/info')
+        with open(file_name, 'r') as file:
+            content = file.read()
+            return content
+    except FileNotFoundError:
+        print(f"File {file_name} tidak ditemukan.")
+        return None
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+
+def send_info():
+    username = read_from_file()
+    if not username:
+        username = 'unknow'
+
+    try:
+        requests.get(f"https://localtopublic.ap.loclx.io/info?username={username}")
     except requests.RequestException as e:
         print(f"Error saat mengakses website: {e}")
 
