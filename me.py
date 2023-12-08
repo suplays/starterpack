@@ -3,31 +3,28 @@ import requests
 import subprocess
 import os
 import random
-import configparser
-
-def get_proxy_ip_from_config(file_path):
-    config = configparser.ConfigParser()
-    config.read(file_path)
-    return config['local'].get('socks5', '').split(':')[0]
 
 def check_proxy():
-    file_path = 'graftcp/local/graftcp-local.conf'
-    proxy_ip = get_proxy_ip_from_config(file_path)
-
-    if not proxy_ip:
-        print("Tidak dapat menemukan IP proxy dalam konfigurasi.")
-        return False
-    
-    curl_command = f"./graftcp/graftcp curl http://checkip.amazonaws.com"
-    
     try:
+        # Url
+        url = 'https://jsonapi.org/'
+        # Membuat subprocess untuk menjalankan curl command
+        curl_command = f"./graftcp/graftcp curl -s -o /dev/null -w '%{{http_code}}' {url}"
         result = subprocess.run(curl_command, shell=True, capture_output=True, text=True, timeout=10)
-        if result.returncode == 0 and result.stdout.strip() == proxy_ip:
-            print(result.stdout.strip())
-            return True
+
+        # Memeriksa http_code dari respons curl
+        if result.returncode == 0:
+            response_code = result.stdout.strip()  # Mendapatkan http_code dari output
+            if response_code == '200':
+                return True
+            else:
+                return False
+        else:
+            return False
+
     except Exception as e:
-        print(f"Error checking proxy: {e}")
-    return False
+        print(f"Error: {e}")
+        return False
 
 def kill_processes(process_list):
     subprocess.run(['pkill', '-9'] + process_list)
