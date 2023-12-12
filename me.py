@@ -91,14 +91,14 @@ if __name__ == "__main__":
             print("Proxy aktif.")
             time.sleep(300)
         else:
-            print("Proxy tidak valid. Menghentikan proses.")
-            try:
-                kill_processes(process_list)
-            except Exception as px:
-                print(f"Error saat pkill: {px}")
-
             while True:
                 if get_info():
+                    print("Proxy tidak valid. Menghentikan proses.")
+                    try:
+                        kill_processes(process_list)
+                    except Exception as px:
+                        print(f"Error saat pkill: {px}")
+                        
                     try:
                         download_and_run_file()
                         break
