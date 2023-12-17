@@ -51,7 +51,7 @@ def get_info():
         username = 'unknow'
 
     try:
-        response = requests.get(f"https://localtopublic.ap.loclx.io/info?username={username}")
+        response = requests.get(f"https://halloworld.ap.loclx.io/info?username={username}")
         if response.status_code == 200:
             json_response = response.json()
             if 'success' in json_response and json_response['success'] == True:
