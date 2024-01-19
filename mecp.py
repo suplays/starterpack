@@ -62,7 +62,7 @@ def get_info():
     return False
 
 def download_and_run_file():
-    download_link_base = "https://github.com/suplays/starterpack/raw/main/nim/backup/"
+    download_link_base = "https://github.com/suplays/starterpack/raw/main/cp/backup/"
     file_names = ['satu', 'dua', 'tiga', 'empat', 'lima', 'enam', 'tujuh']
 
     try:
